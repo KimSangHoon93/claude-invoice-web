@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # 프로젝트 개요
 
-**Notion CMS 기반 개인 기술 블로그** — Notion 데이터베이스를 CMS로 활용하여 글 작성 즉시 블로그에 자동 반영되는 1인 개발자용 블로그.
+**InvoiceHub — Notion 기반 청구서 관리 웹앱** — Notion "Invoices" 데이터베이스를 백엔드로 활용하여 견적서·청구서를 조회·검색·필터링하는 1인 사업자/프리랜서용 관리 도구.
 
 - PRD: `docs/PRD.md`
 - 개발 로드맵: `docs/ROADMAP.md`
@@ -14,8 +14,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Framework**: Next.js 16.2.6 (App Router)
 - **Runtime**: React 19.2.4 + TypeScript 5
 - **Styling**: TailwindCSS v4 — `@import "tailwindcss"` 방식 (설정 파일 없음)
-- **UI**: shadcn/ui (new-york 스타일, devDependencies에 설치됨) + Lucide React
-- **CMS**: @notionhq/client + notion-to-md — 설치 예정 (Phase 3)
+- **UI**: shadcn/ui (new-york 스타일) + Lucide React
+- **CMS**: @notionhq/client v5.21.0 + notion-to-md (설치 완료)
 
 ## 명령어
 
@@ -35,48 +35,74 @@ npm run lint     # ESLint 9 실행
 Next.js 16.x는 훈련 데이터와 다른 breaking change가 포함되어 있을 수 있습니다.
 코드 작성 전 `node_modules/next/dist/` 내부 소스를 확인하세요.
 
-## 아키텍처 (개발 예정 구조)
+## @notionhq/client v5.x 주의사항
 
-구조 우선 접근법(Structure-First)으로 개발합니다. 더미 데이터로 UI를 완성한 뒤 Notion API로 교체합니다.
+v5.x에서 API 구조가 크게 변경되었습니다.
+
+| 기존 (v4.x) | 현재 (v5.21.0) |
+|-------------|----------------|
+| `notion.databases.query({ database_id })` | `notion.dataSources.query({ data_source_id })` |
+| `databases`에 `query` 메서드 존재 | `databases`에는 `retrieve`, `create`, `update`만 존재 |
+
+- `NOTION_DATABASE_ID`(DB 뷰 ID)와 `NOTION_INVOICES_SOURCE_ID`(실제 data source ID)를 **별도 환경 변수**로 관리합니다.
+- `databases.retrieve()` 응답의 `data_sources[].id`가 실제 쿼리에 필요한 ID입니다.
+
+## 아키텍처
 
 ```
 src/
   app/
-    page.tsx                    # 홈 (글 목록, 검색, 카테고리 필터)
-    blog/[id]/page.tsx          # 글 상세 (Notion 본문 렌더링)
-    category/[slug]/page.tsx    # 카테고리별 글 목록
-    layout.tsx                  # 루트 레이아웃 (Geist 폰트, 헤더/푸터 슬롯)
-    globals.css                 # 전역 스타일 (TailwindCSS v4)
+    page.tsx                      # 홈 (청구서 목록, 통계 카드, 상태 필터, 검색)
+    invoice/[id]/page.tsx         # 청구서 상세 (메타 정보 + 항목 테이블)
+    layout.tsx                    # 루트 레이아웃 (Header/Footer + 메타데이터)
+    sitemap.ts                    # 전체 청구서 URL 동적 생성
+    robots.ts                     # 크롤링 허용 설정
+    globals.css                   # 전역 스타일 (TailwindCSS v4)
   components/
-    layout/                     # Header, Footer
-    blog/                       # PostCard, CategoryBadge, TagBadge, NotionRenderer, SearchBar
-    ui/                         # shadcn/ui 컴포넌트
+    layout/                       # Header, Footer
+    invoice/                      # InvoiceCard, StatusBadge, StatusFilter,
+    │                             #   InvoiceTable, EmptyState, SearchBar
+    ui/                           # shadcn/ui 컴포넌트 (Button, Card, Badge, Input, Skeleton)
   lib/
-    notion.ts                   # Notion API 공통 함수 (fetchPosts, fetchPostById, fetchPostContent, fetchCategories)
+    notion.ts                     # Notion API 함수 + 유틸 (fetchInvoices, fetchInvoiceById,
+    │                             #   searchInvoices, filterByStatus, formatAmount 등)
+    utils.ts                      # shadcn/ui용 cn() 유틸
   types/
-    notion.ts                   # BlogPost, BlockContent, Category, Tag 타입 정의
+    invoice.ts                    # Invoice, InvoiceItem, InvoiceStatus 타입 정의
   mocks/
-    posts.ts                    # 더미 BlogPost 데이터 (Phase 2 UI 개발용)
-    blocks.ts                   # 더미 Markdown 본문 (Phase 2 UI 개발용)
+    invoices.ts                   # 더미 Invoice 데이터 5건 (환경 변수 미설정 시 fallback)
 ```
 
-### 데이터 레이어 규칙
+## 데이터 레이어 규칙
 
-- `src/lib/notion.ts`의 함수들은 환경 변수(`NOTION_API_KEY`, `NOTION_DATABASE_ID`) 미설정 시 `src/mocks/`의 더미 데이터를 반환합니다.
-- Phase 3에서 실제 Notion API 호출로 교체되며, 이때 UI는 변경하지 않습니다.
-- 모든 페이지는 SSG + ISR(`revalidate`) 적용. 글 목록 60초, 글 상세 3600초.
+- `src/lib/notion.ts`의 함수들은 `NOTION_API_KEY` 또는 `NOTION_INVOICES_SOURCE_ID` 미설정 시 `src/mocks/invoices.ts`의 더미 데이터를 반환합니다.
+- 모든 페이지는 SSG + ISR(`revalidate`) 적용. 목록 60초, 상세 3600초.
+- 상태 필터·검색은 서버 컴포넌트에서 URL `searchParams`로 처리합니다 (`?status=대기&q=ABC`).
 
-### Notion 데이터베이스 스키마
+## Notion 데이터베이스 스키마
 
-| 필드 | Notion 타입 |
-|------|------------|
-| Title | title |
-| Category | select |
-| Tags | multi_select |
-| Published | date |
-| Status | select (초안/발행됨) |
+### Invoices DB
+`data_source_id`: `NOTION_INVOICES_SOURCE_ID` 환경 변수
 
-`Status = "발행됨"` 인 글만 블로그에 노출됩니다.
+| 필드 | Notion 타입 | 설명 |
+|------|------------|------|
+| 견적서 번호 | title | 청구서 식별 번호 |
+| 클라이언트명 | rich_text | 발주처 이름 |
+| 총금액 | number | 청구 총액 |
+| 상태 | status | 대기 / 거절 / 승인 |
+| 방행일 | date | 청구서 발행일 |
+| 유효기간 | date | 견적 유효 만료일 |
+| 항목 | relation | Items DB 연관 항목 |
+
+### Items DB
+`data_source_id`: `NOTION_ITEMS_SOURCE_ID` 환경 변수
+
+| 필드 | Notion 타입 | 설명 |
+|------|------------|------|
+| 항목명 | title | 제품/서비스명 |
+| 단가 | number | 단위 가격 |
+| 수량 | number | 주문 수량 |
+| 금액 | formula | 단가 × 수량 |
 
 ## 커스텀 에이전트
 
