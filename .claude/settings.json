@@ -1,0 +1,18 @@
+{
+    "permissions": {
+      "allow": [
+        "mcp__shadcn",
+        "mcp__playwright",
+        "mcp__shrimp-task-manager"
+      ],
+      "deny": [],
+      "ask": []
+    },
+    "enableAllProjectMcpServers": true,
+    "enabledMcpjsonServers": [
+      "shadcn",
+      "playwright"
+    ],
+    "hooks": {
+    }
+  }
