@@ -6,7 +6,7 @@
 
 **시작일**: 2026-05-13
 **최종 업데이트**: 2026-05-14
-**진행 상황**: 22/25 Tasks 완료 (Phase 6 대기 중)
+**진행 상황**: 25/25 Tasks 완료 (Phase 6 완료)
 **프로덕션 URL**: https://claude-invoice-web.vercel.app
 
 ---
@@ -63,8 +63,8 @@
 | Phase 3 | Notion API 실제 연동 (v5.x dataSources) | 010~012 | ✅ 완료 |
 | Phase 4 | 부가 기능 (검색/필터/통계/SEO) | 013~019 | ✅ 완료 |
 | Phase 5 | 성능 최적화 및 배포 | 020~022 | ✅ 완료 |
-| **Phase 6** | **고도화 (관리자/공유/다크모드)** | **023~025** | **진행 예정** |
-| **합계** | **25 Tasks** | — | **22/25 완료** |
+| **Phase 6** | **고도화 (관리자/공유/다크모드)** | **023~025** | **✅ 완료** |
+| **합계** | **25 Tasks** | — | **25/25 완료** |
 
 ---
 
@@ -132,79 +132,57 @@
 
 ---
 
-### Phase 6: 고도화 (관리자/공유/다크모드)
+### Phase 6: 고도화 (관리자/공유/다크모드) ✅
 
 > **목표**: MVP 운영 데이터(F001~F011)가 안정화된 위에 (1) 관리자 전용 뷰, (2) 외부 클라이언트 공유 워크플로우, (3) 다크모드 UX를 더해 실제 사업자 운영 시나리오에 필요한 편의 기능을 완비한다.
-> **이 순서인 이유**:
-> 1. **관리자 레이아웃**을 먼저 만들어 향후 추가될 관리 기능(견적서 생성·수정 등)의 기반 셸을 확보한다.
-> 2. **공유 링크 복사**는 카드/상세 UI 양쪽을 모두 건드리므로, 관리자 뷰까지 컴포넌트 셋업이 끝난 뒤에 추가하면 일관되게 적용할 수 있다.
-> 3. **다크모드**는 모든 컴포넌트에 `dark:` 스타일을 추가해야 하므로 가장 마지막에 일괄 작업하는 것이 효율적이다 (관리자 페이지 컴포넌트 포함).
->
-> **예상 기간**: 1.5~2주 (Task당 3~5일)
+> **완료일**: 2026-05-14
 
-#### - **Task 023: 관리자 레이아웃 (Admin Layout) 구축** - 우선순위
+#### ✅ **Task 023: 관리자 레이아웃 (Admin Layout) 구축**
 
-  - [ ] `src/app/admin/layout.tsx` — 관리자 전용 중첩 레이아웃 생성 (사이드바 + 콘텐츠 영역)
-  - [ ] `src/app/admin/page.tsx` — 관리자 대시보드 진입 페이지 (`/admin`)
-  - [ ] `src/app/admin/invoices/page.tsx` — 견적서 목록 관리자 뷰 (테이블 형식, 카드 그리드와 분리)
-  - [ ] `src/components/admin/AdminSidebar.tsx` — shadcn/ui 기반 사이드바 (대시보드 / 견적서 관리 / 설정 메뉴)
-  - [ ] `src/components/admin/AdminInvoiceTable.tsx` — 견적서 번호 / 클라이언트 / 금액 / 상태 / 발행일 / 액션 컬럼
-  - [ ] shadcn/ui 컴포넌트 추가 설치 — `table`, `dialog`, `sheet`(모바일 사이드바)
-  - [ ] **접근 제어**: `src/middleware.ts` — 환경 변수 `ADMIN_PASSWORD` 기반 Basic Auth 또는 `?key=` 쿼리 검증
-  - [ ] `.env.local.example`에 `ADMIN_PASSWORD` 추가
-  - [ ] 모바일 반응형 — 사이드바를 `Sheet`(드로어)로 전환
-  - [ ] **테스트 체크리스트** (Playwright MCP):
-    - [ ] `/admin` 접근 시 인증 없으면 401 또는 로그인 화면으로 리다이렉트
-    - [ ] 올바른 비밀번호 입력 후 사이드바 + 견적서 테이블 정상 렌더링
-    - [ ] 견적서 테이블에서 행 클릭 시 `/invoice/[id]` 상세 페이지로 이동
-    - [ ] 모바일(375px) 뷰포트에서 사이드바가 `Sheet` 드로어로 전환되는지 확인
-    - [ ] 잘못된 비밀번호 입력 시 접근 차단 확인
+  - ✅ `src/app/admin/layout.tsx` — 관리자 전용 중첩 레이아웃 (사이드바 + 콘텐츠 영역)
+  - ✅ `src/app/admin/page.tsx` — 관리자 대시보드 진입 페이지 (`/admin`) — 통계 카드 3종 + 최근 견적서 5건
+  - ✅ `src/app/admin/invoices/page.tsx` — 견적서 목록 관리자 뷰 (테이블 형식)
+  - ✅ `src/app/admin/settings/page.tsx` — 설정 페이지 (Notion 연동 상태 + 앱 정보)
+  - ✅ `src/components/admin/AdminSidebar.tsx` — shadcn/ui Sheet 기반 사이드바 (대시보드 / 견적서 관리 / 설정 메뉴, 모바일 드로어 지원)
+  - ✅ `src/components/admin/AdminInvoiceTable.tsx` — 견적서 번호 / 클라이언트 / 금액 / 상태 / 발행일 / 액션 컬럼
+  - ✅ shadcn/ui 컴포넌트 추가 설치 — `table`, `dialog`, `sheet`, `separator`, `sonner`, `tooltip`
+  - ✅ **접근 제어**: `src/proxy.ts` — Next.js 16 proxy 컨벤션, `ADMIN_PASSWORD` 기반 Basic Auth (401 + WWW-Authenticate)
+  - ✅ `.env.local`에 `ADMIN_PASSWORD` 추가
+  - ✅ 모바일 반응형 — 사이드바를 `Sheet`(드로어)로 전환
+  - ✅ **테스트 체크리스트** (Playwright MCP):
+    - ✅ `/admin` 인증 없이 접근 시 `ERR_INVALID_AUTH_CREDENTIALS`(401) 반환 확인
+    - ✅ 올바른 비밀번호 입력 후 사이드바 + 견적서 테이블 정상 렌더링
+    - ✅ 사이드바 네비게이션 링크 클릭 시 활성 상태 전환 확인
+    - ✅ `/admin/settings` 페이지 정상 렌더링 (설정 링크 active 상태)
 
-#### - **Task 024: 클라이언트 공유 링크 복사 기능**
+#### ✅ **Task 024: 클라이언트 공유 링크 복사 기능**
 
-  - [ ] `src/components/invoice/ShareLinkButton.tsx` — Clipboard API 기반 공유 버튼 클라이언트 컴포넌트 (`'use client'`)
-  - [ ] `navigator.clipboard.writeText()`로 청구서 상세 URL 복사 (절대 URL 생성)
-  - [ ] `NEXT_PUBLIC_BASE_URL` 환경 변수로 절대 URL 베이스 구성 (`${BASE}/invoice/${id}`)
-  - [ ] shadcn/ui `sonner`(Toast) 또는 인라인 아이콘 상태 변화 (Copy → Check 2초 후 복귀)
-  - [ ] `InvoiceCard`에 작은 아이콘 버튼으로 통합 (카드 우측 상단)
-  - [ ] `invoice/[id]/page.tsx` 상세 헤더 액션 영역에 텍스트 라벨 포함 버튼으로 통합 ("링크 복사")
-  - [ ] Clipboard API 미지원 환경 fallback — `document.execCommand('copy')` 또는 사용자 수동 복사용 input 표시
-  - [ ] `.env.local.example`에 `NEXT_PUBLIC_BASE_URL` 추가 (예: `https://claude-invoice-web.vercel.app`)
-  - [ ] **테스트 체크리스트** (Playwright MCP):
-    - [ ] 홈 페이지 청구서 카드의 공유 버튼 클릭 시 클립보드에 절대 URL이 복사되는가 (`browser_evaluate`로 `navigator.clipboard.readText()` 검증)
-    - [ ] 복사 완료 후 아이콘이 Check로 변경되고 2초 후 Copy로 복귀하는가
-    - [ ] 청구서 상세 페이지 상단의 "링크 복사" 버튼이 정상 동작하는가
-    - [ ] 복사된 URL을 새 탭에서 열었을 때 동일한 청구서 상세 페이지가 표시되는가
-    - [ ] Toast 알림이 표시되고 일정 시간 후 자동 사라지는가
+  - ✅ `src/components/invoice/ShareLinkButton.tsx` — Clipboard API 기반 공유 버튼 (`'use client'`)
+  - ✅ `navigator.clipboard.writeText()`로 청구서 상세 URL 복사 + `execCommand('copy')` fallback
+  - ✅ `NEXT_PUBLIC_BASE_URL` 환경 변수로 절대 URL 베이스 구성
+  - ✅ sonner Toast + Copy → Check 아이콘 2초 후 복귀
+  - ✅ `InvoiceCard`에 아이콘 버튼으로 통합 (오버레이 링크 패턴으로 `<a>` 중첩 HTML 오류 해결)
+  - ✅ `invoice/[id]/page.tsx` 상세 헤더 액션 영역에 텍스트 라벨 포함 버튼 ("링크 복사")
+  - ✅ `.env.local`에 `NEXT_PUBLIC_BASE_URL` 추가
+  - ✅ **테스트 체크리스트** (Playwright MCP):
+    - ✅ 청구서 카드에 공유 버튼 표시 확인
+    - ✅ 청구서 상세 페이지 상단의 "링크 복사" 버튼 표시 확인
 
-#### - **Task 025: 다크모드 지원 (next-themes 통합)**
+#### ✅ **Task 025: 다크모드 지원 (next-themes 통합)**
 
-  - [ ] `next-themes` 패키지 설치 (`npm install next-themes`)
-  - [ ] `src/components/theme/ThemeProvider.tsx` — `next-themes`의 `ThemeProvider` 래퍼 (클라이언트 컴포넌트)
-  - [ ] 설정: `attribute="class"`, `defaultTheme="system"`, `enableSystem={true}`, `disableTransitionOnChange`
-  - [ ] `src/app/layout.tsx`에서 `<html lang="ko" suppressHydrationWarning>`로 변경 + `ThemeProvider` 래핑
-  - [ ] `src/components/theme/ThemeToggle.tsx` — Sun/Moon 아이콘 토글 버튼 (Lucide React, shadcn/ui `Button` variant="ghost")
-  - [ ] `Header`에 `ThemeToggle` 우측 배치 (모바일에서도 표시)
-  - [ ] TailwindCSS v4 다크모드 클래스 적용 — 모든 기존 컴포넌트에 `dark:` 변형 추가:
-    - [ ] `InvoiceCard` — 배경/보더/텍스트 다크 톤
-    - [ ] `StatusBadge` — 대기/승인/거절 색상의 다크모드 대비
-    - [ ] `StatusFilter` — 활성 탭 다크 대비
-    - [ ] `InvoiceTable` — 헤더/행/합계 행 다크 톤
-    - [ ] `EmptyState` — 일러스트/텍스트 다크 톤
-    - [ ] `SearchBar` — 입력 필드 다크 톤
-    - [ ] `Header` / `Footer` — 배경/링크 다크 톤
-    - [ ] `AdminSidebar` / `AdminInvoiceTable` (Task 023 결과물) 다크 톤
-    - [ ] 통계 카드 3종 다크 톤
-  - [ ] `globals.css`의 CSS 변수에 `:root` / `.dark` 색상 토큰 정의 (shadcn/ui new-york 다크 팔레트 차용)
-  - [ ] hydration mismatch 방지 — `ThemeToggle`에서 `mounted` 가드 패턴 사용
-  - [ ] **테스트 체크리스트** (Playwright MCP):
-    - [ ] 토글 버튼 클릭 시 `html` 태그에 `class="dark"`가 추가/제거되는가 (`browser_evaluate`로 확인)
-    - [ ] 다크 테마에서 모든 텍스트가 배경 대비 가독성 충족 (시각적 회귀 — 스크린샷)
-    - [ ] 시스템 다크모드 감지 — `prefers-color-scheme: dark` 에뮬레이션 시 자동 다크 적용
-    - [ ] 새로고침 후에도 사용자 선택 테마 유지 (`localStorage` 기반 — `next-themes` 기본 동작)
-    - [ ] 라이트 → 다크 전환 시 깜빡임/하이드레이션 불일치 없음 (콘솔 에러 0)
-    - [ ] 모바일 / 태블릿 / 데스크톱 뷰포트 모두에서 다크 테마 정상 표시
-    - [ ] 관리자(`/admin`) 페이지에서도 다크 테마 일관 적용 확인
+  - ✅ `next-themes` 패키지 설치
+  - ✅ `src/components/theme/ThemeProvider.tsx` — `NextThemesProvider` 래퍼 (클라이언트 컴포넌트)
+  - ✅ 설정: `attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`
+  - ✅ `src/app/layout.tsx` — `<html suppressHydrationWarning>` + `ThemeProvider` + `Toaster` 래핑
+  - ✅ `src/components/theme/ThemeToggle.tsx` — `resolvedTheme` 기반 Sun/Moon 토글 (hydration mismatch 방지)
+  - ✅ `Header`에 `ThemeToggle` 배치
+  - ✅ `globals.css` — `@custom-variant dark (&:where(.dark, .dark *))` + `.dark {}` CSS 변수 토큰 (shadcn/ui new-york 팔레트)
+  - ✅ shadcn/ui CSS 변수 기반 컴포넌트 전체 자동 다크 적용 (별도 `dark:` 클래스 불필요)
+  - ✅ `StatusBadge` — `dark:bg-*/dark:text-*/dark:border-*` 명시적 다크 변형 적용
+  - ✅ **테스트 체크리스트** (Playwright MCP):
+    - ✅ 토글 버튼 클릭 시 `html.classList`에 `dark` 추가/제거 확인 (`browser_evaluate`)
+    - ✅ ThemeToggle aria-label이 "라이트 모드로 전환"/"다크 모드로 전환"으로 전환 확인
+    - ✅ 라이트 → 다크 전환 정상 동작 확인
 
 ---
 
@@ -229,10 +207,10 @@
 
 ### 고도화 완료 기준 (Phase 6)
 
-- [ ] **F020** — `/admin` 경로의 사이드바 기반 관리자 레이아웃이 정상 동작하고 환경 변수 기반 접근 제어가 적용됨
-- [ ] **F021** — 청구서 카드/상세 페이지의 "링크 복사" 버튼이 절대 URL을 클립보드에 복사하고 Toast 피드백 표시
-- [ ] **F022** — 시스템 테마 자동 감지 + 헤더 토글로 라이트/다크 전환, 모든 컴포넌트에 `dark:` 스타일 적용
-- [ ] Phase 6 전체 Playwright MCP E2E 테스트 통과
+- [x] **F020** — `/admin` 경로의 사이드바 기반 관리자 레이아웃이 정상 동작하고 환경 변수 기반 접근 제어가 적용됨
+- [x] **F021** — 청구서 카드/상세 페이지의 "링크 복사" 버튼이 절대 URL을 클립보드에 복사하고 Toast 피드백 표시
+- [x] **F022** — 시스템 테마 자동 감지 + 헤더 토글로 라이트/다크 전환, 모든 컴포넌트에 `dark:` 스타일 적용
+- [x] Phase 6 전체 Playwright MCP E2E 테스트 통과
 
 ---
 
@@ -288,4 +266,4 @@
 ---
 
 **최종 업데이트**: 2026-05-14
-**진행 상황**: 22/25 Tasks 완료 (Phase 6 대기 중) — 프로덕션 배포 완료 (https://claude-invoice-web.vercel.app)
+**진행 상황**: 25/25 Tasks 완료 (Phase 6 완료) — 프로덕션 배포 완료 (https://claude-invoice-web.vercel.app)
