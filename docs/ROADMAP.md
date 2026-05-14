@@ -2,10 +2,12 @@
 
 > Notion DB 기반 청구서/견적서 관리 웹앱 — Notion "Invoices" 데이터베이스를 백엔드로 활용하여 견적서·청구서를 조회·검색·필터링하는 1인 사업자용 관리 도구
 > PRD 참조: [docs/PRD.md](./PRD.md)
+> 이전 로드맵(Phase 1~5 상세): [docs/roadmaps/ROADMAP_v1.md](./roadmaps/ROADMAP_v1.md)
 
 **시작일**: 2026-05-13
-**최종 업데이트**: 2026-05-14 (Phase 1~5 전체 완료)
-**진행 상황**: Phase 5 완료 (22/22 Tasks 완료)
+**최종 업데이트**: 2026-05-14
+**진행 상황**: 22/25 Tasks 완료 (Phase 6 대기 중)
+**프로덕션 URL**: https://claude-invoice-web.vercel.app
 
 ---
 
@@ -19,8 +21,9 @@
 - **검색 기능 (F004)**: 클라이언트명/견적서 번호로 빠른 탐색
 - **요약 통계 (F005)**: 전체 건수, 승인 금액, 대기 건수 대시보드 카드
 - **Notion 자동 반영 (F010)**: ISR로 Notion에서 견적서 수정 시 자동 반영
-
-> **프로젝트 전환 노트**: 본 프로젝트는 Notion CMS 기반 기술 블로그로 시작했으나, 연결된 Notion DB가 "Invoices"(견적서 관리)였고 `@notionhq/client v5.x`의 파괴적 변경(`databases.query` 제거 → `dataSources.query` 도입)을 발견하면서 **청구서 관리 웹앱으로 방향을 전환**(2026-05-13)했습니다.
+- **관리자 뷰 (F020 — 신규)**: `/admin` 경로의 사이드바 기반 관리자 전용 레이아웃
+- **공유 링크 복사 (F021 — 신규)**: 청구서 상세 URL을 클립보드로 1초 만에 복사
+- **다크모드 (F022 — 신규)**: 시스템 테마 자동 감지 + 수동 토글
 
 ---
 
@@ -33,7 +36,7 @@
 
 2. **작업 생성**
    - `/tasks` 디렉토리에 새 작업 파일 생성
-   - 명명 형식: `XXX-description.md` (예: `001-setup.md`)
+   - 명명 형식: `XXX-description.md` (예: `023-admin-layout.md`)
    - 고수준 명세서, 관련 파일, 수락 기준, 구현 단계 포함
    - **API/비즈니스 로직 작업 시 "## 테스트 체크리스트" 섹션 필수 (Playwright MCP 시나리오 작성)**
 
@@ -53,14 +56,15 @@
 
 ## 전체 일정 요약
 
-| Phase | 내용 | 상태 |
-|-------|------|------|
-| Phase 1 | 프로젝트 기반 구축 (구조/타입/Mock) | ✅ 완료 |
-| Phase 2 | UI 컴포넌트 라이브러리 및 페이지 | ✅ 완료 |
-| Phase 3 | Notion API 실제 연동 (v5.x dataSources) | ✅ 완료 |
-| Phase 4 | 부가 기능 (검색/필터/통계/SEO) | ✅ 완료 |
-| Phase 5 | 성능 최적화 및 배포 | ✅ 완료 |
-| **합계** | **22 Tasks** | **22/22 완료** |
+| Phase | 내용 | Tasks | 상태 |
+|-------|------|-------|------|
+| Phase 1 | 프로젝트 기반 구축 (구조/타입/Mock) | 001~004 | ✅ 완료 |
+| Phase 2 | UI 컴포넌트 라이브러리 및 페이지 | 005~009 | ✅ 완료 |
+| Phase 3 | Notion API 실제 연동 (v5.x dataSources) | 010~012 | ✅ 완료 |
+| Phase 4 | 부가 기능 (검색/필터/통계/SEO) | 013~019 | ✅ 완료 |
+| Phase 5 | 성능 최적화 및 배포 | 020~022 | ✅ 완료 |
+| **Phase 6** | **고도화 (관리자/공유/다크모드)** | **023~025** | **진행 예정** |
+| **합계** | **25 Tasks** | — | **22/25 완료** |
 
 ---
 
@@ -68,213 +72,145 @@
 
 ### Phase 1: 프로젝트 기반 구축 ✅
 
-> **목표**: Next.js 16 + TypeScript + TailwindCSS v4 + shadcn/ui 환경을 구축하고, 청구서 도메인 타입과 Mock 레이어를 선행 구축하여 이후 UI/API 작업이 같은 인터페이스를 공유할 수 있도록 한다.
-> **완료일**: 2026-05-13
+> **목표**: Next.js 16 + TypeScript + TailwindCSS v4 + shadcn/ui 환경 구축, 청구서 도메인 타입과 Mock 레이어 선행 확립
+> **완료일**: 2026-05-13 / **상세**: [roadmaps/ROADMAP_v1.md](./roadmaps/ROADMAP_v1.md#phase-1-프로젝트-기반-구축-)
 
-- ✅ **Task 001: 프로젝트 초기 설정 및 폴더 구조** — 완료
-  - ✅ Next.js 16.2.6 + TypeScript 5 + TailwindCSS v4 + shadcn/ui(new-york) 초기화
-  - ✅ Lucide React 설치
-  - ✅ 폴더 구조 생성: `src/components/{layout,invoice,ui}`, `src/lib`, `src/types`, `src/mocks`
-  - ✅ tsconfig `@/*` 경로 별칭 동작 확인
-  - ✅ ESLint 9 + Next 16 lint 설정 점검
-
-- ✅ **Task 002: 라우트 골격 및 빈 페이지 생성** — 완료
-  - ✅ `src/app/page.tsx` — 홈 페이지 (청구서 목록) 빈 껍데기
-  - ✅ `src/app/invoice/[id]/page.tsx` — 청구서 상세 동적 라우트 빈 껍데기
-  - ✅ `src/app/layout.tsx` — 루트 레이아웃 (헤더/푸터 슬롯 + 메타데이터)
-  - ✅ `src/app/not-found.tsx` — 404 페이지
-  - ✅ 모든 라우트 200 응답 확인
-
-- ✅ **Task 003: 타입 정의 및 인터페이스 설계** — 완료
-  - ✅ `src/types/invoice.ts` — `Invoice`, `InvoiceItem`, `InvoiceStatus` (대기/승인/거절) 타입 정의
-  - ✅ Notion 응답 매핑용 어댑터 타입 시그니처 선언
-  - ✅ `src/lib/notion.ts` 함수 시그니처 선언 (스텁 단계)
-    - ✅ `fetchInvoices(): Promise<Invoice[]>`
-    - ✅ `fetchInvoiceById(id: string): Promise<Invoice | null>`
-    - ✅ `searchInvoices(query: string): Promise<Invoice[]>`
-    - ✅ `filterByStatus(status: InvoiceStatus): Promise<Invoice[]>`
-    - ✅ `formatAmount(amount: number): string`
-  - ✅ `tsc --noEmit` 타입 컴파일 통과
-
-- ✅ **Task 004: 환경 변수 및 Mock 데이터 준비** — 완료
-  - ✅ `.env.local.example` 생성 (`NOTION_API_KEY`, `NOTION_DATABASE_ID`, `NOTION_INVOICES_SOURCE_ID`, `NOTION_ITEMS_SOURCE_ID`)
-  - ✅ `@notionhq/client v5.21.0`, `notion-to-md` 설치 (실사용은 Phase 3)
-  - ✅ `src/mocks/invoices.ts` — `Invoice` 더미 5건 (상태/금액/날짜 다양화)
-  - ✅ `src/lib/notion.ts` — 환경 변수 미설정 시 Mock 데이터 fallback 분기
+- ✅ **Task 001: 프로젝트 초기 설정 및 폴더 구조** — Next.js 16.2.6 + TypeScript 5 + TailwindCSS v4 + shadcn/ui(new-york) 초기화, `@/*` 경로 별칭, ESLint 9
+- ✅ **Task 002: 라우트 골격 및 빈 페이지 생성** — `app/page.tsx`, `app/invoice/[id]/page.tsx`, `app/layout.tsx`, `not-found.tsx`
+- ✅ **Task 003: 타입 정의 및 인터페이스 설계** — `Invoice`, `InvoiceItem`, `InvoiceStatus` 타입 + `notion.ts` 함수 시그니처
+- ✅ **Task 004: 환경 변수 및 Mock 데이터 준비** — `.env.local.example`, `mocks/invoices.ts` 5건, Mock fallback 분기
 
 ---
 
 ### Phase 2: UI 컴포넌트 라이브러리 및 페이지 ✅
 
-> **목표**: shadcn/ui 기반 디자인 시스템을 구축하고, 더미 데이터로 청구서 목록·상세 페이지 UI를 완성하여 Notion API 없이도 전체 사용자 플로우를 클릭으로 체험할 수 있는 상태를 만든다.
-> **완료일**: 2026-05-13
+> **목표**: shadcn/ui 디자인 시스템 구축, 더미 데이터로 청구서 목록·상세 페이지 UI 완성
+> **완료일**: 2026-05-13 / **상세**: [roadmaps/ROADMAP_v1.md](./roadmaps/ROADMAP_v1.md#phase-2-ui-컴포넌트-라이브러리-및-페이지-)
 
-- ✅ **Task 005: shadcn/ui 기본 컴포넌트 설치** — 완료
-  - ✅ Button, Card, Badge, Input, Skeleton 컴포넌트 추가
-  - ✅ TailwindCSS v4 디자인 토큰(색상/간격/타이포그래피) 확립
-  - ✅ Lucide React 아이콘 통합
-
-- ✅ **Task 006: 레이아웃 컴포넌트 구현** — 완료
-  - ✅ `src/components/layout/Header.tsx` — InvoiceHub 로고 + "새 청구서" 버튼
-  - ✅ `src/components/layout/Footer.tsx` — 푸터
-  - ✅ 루트 레이아웃에 헤더/푸터 통합
-
-- ✅ **Task 007: 청구서 도메인 컴포넌트 구현** — 완료
-  - ✅ `src/components/invoice/InvoiceCard.tsx` — 견적서 번호, 클라이언트명, 금액, 상태, 날짜 표시
-  - ✅ `src/components/invoice/StatusBadge.tsx` — 대기/승인/거절 상태별 색상 배지
-  - ✅ `src/components/invoice/StatusFilter.tsx` — 전체/대기/승인/거절 탭
-  - ✅ `src/components/invoice/InvoiceTable.tsx` — 항목명/단가/수량/금액 테이블 + 합계 행
-  - ✅ `src/components/invoice/EmptyState.tsx` — 빈 상태 UI
-  - ✅ `src/components/invoice/SearchBar.tsx` — 클라이언트명·견적서 번호 검색 입력
-
-- ✅ **Task 008: 홈 페이지 UI (Mock 데이터)** — 완료
-  - ✅ 더미 `Invoice[]`로 `InvoiceCard` 그리드 렌더링
-  - ✅ 발행일 내림차순 정렬
-  - ✅ 빈 상태 UI 분기
-  - ✅ 모바일 1열 / 태블릿 2열 / 데스크톱 3열 반응형 그리드
-
-- ✅ **Task 009: 청구서 상세 페이지 UI (Mock 데이터)** — 완료
-  - ✅ 청구서 메타 정보 헤더 (클라이언트명, 발행일, 유효기간, 상태)
-  - ✅ `InvoiceTable`로 항목 목록 렌더링 + 총금액 합계 표시
-  - ✅ "← 목록으로 돌아가기" 버튼
-  - ✅ 존재하지 않는 ID 요청 시 `notFound()` 처리
+- ✅ **Task 005: shadcn/ui 기본 컴포넌트 설치** — Button, Card, Badge, Input, Skeleton
+- ✅ **Task 006: 레이아웃 컴포넌트 구현** — `Header`, `Footer` + 루트 레이아웃 통합
+- ✅ **Task 007: 청구서 도메인 컴포넌트 구현** — `InvoiceCard`, `StatusBadge`, `StatusFilter`, `InvoiceTable`, `EmptyState`, `SearchBar`
+- ✅ **Task 008: 홈 페이지 UI (Mock 데이터)** — 카드 그리드 + 발행일 내림차순 + 반응형(1/2/3열)
+- ✅ **Task 009: 청구서 상세 페이지 UI (Mock 데이터)** — 메타 헤더 + 항목 테이블 + 404 처리
 
 ---
 
 ### Phase 3: Notion API 실제 연동 (v5.x dataSources) ✅
 
-> **목표**: Phase 2에서 더미로 채워둔 자리에 실제 Notion API 호출을 연결한다. `@notionhq/client v5.x`의 신규 `dataSources.query` API를 사용하여 Invoices/Items 관계 DB를 조회한다.
-> **완료일**: 2026-05-13
-> **핵심 변경점**: v5.x에서 `databases.query`가 제거됨 — 대신 `dataSources.query`를 사용해야 하며, `data_source_id`(DB ID와 다름)를 별도 환경 변수로 관리한다.
+> **목표**: `@notionhq/client v5.21.0`의 `dataSources.query` API로 Invoices/Items DB 연동
+> **완료일**: 2026-05-13 / **상세**: [roadmaps/ROADMAP_v1.md](./roadmaps/ROADMAP_v1.md#phase-3-notion-api-실제-연동-v5x-datasources-)
 
-- ✅ **Task 010: Notion API 클라이언트 구현 (v5.x)** — 완료
-  - ✅ `src/lib/notion.ts`에 `@notionhq/client v5.21.0` 클라이언트 설정
-  - ✅ `dataSources.query` API로 Invoices DB 조회 (data_source_id: `35914000-a270-80f6-b2e6-000ba09baf57`)
-  - ✅ Notion 응답 → `Invoice` 타입 어댑터 (견적서 번호/title, 클라이언트명/rich_text, 총금액/number, 상태/status, 발행일/date, 유효기간/date)
-  - ✅ API 에러 핸들링 (try/catch + Mock fallback)
-  - ✅ 환경 변수 미설정 시 자동으로 Mock 데이터 반환
-
-- ✅ **Task 011: 청구서 목록 — 실제 API 연동 (ISR 60초)** — 완료
-  - ✅ `fetchInvoices()` — `dataSources.query`로 발행일 내림차순 정렬 조회
-  - ✅ 상태 필터 파라미터 지원 (대기/승인/거절)
-  - ✅ 홈 페이지(`src/app/page.tsx`)에서 실제 호출로 더미 교체
-  - ✅ SSG + ISR(`revalidate: 60`) 설정
-  - ✅ **Playwright MCP 테스트 통과**:
-    - [x] 실제 Notion 견적서 목록이 카드로 렌더링됨
-    - [x] 발행일 내림차순 정렬 확인
-    - [x] Notion 수정 후 revalidate 시간 이후 반영 확인
-
-- ✅ **Task 012: 청구서 상세 — 실제 API 연동 + Items 관계 DB 조회** — 완료
-  - ✅ `fetchInvoiceById(id)` — 청구서 페이지 조회
-  - ✅ Items 관계 DB 병렬 조회 (data_source_id: `35914000-a270-809c-988d-000b9376c176`)
-  - ✅ 항목명(title) / 단가(number) / 수량(number) / 금액(formula) 매핑
-  - ✅ `Promise.all`로 청구서 + 항목 병렬 조회로 응답 시간 최소화
-  - ✅ ISR(`revalidate: 3600`) 설정
-  - ✅ **Playwright MCP 테스트 통과**:
-    - [x] 실제 Notion 청구서 메타 + 항목 테이블이 정상 렌더링됨
-    - [x] 단가 × 수량 = 금액 formula가 올바르게 표시됨
-    - [x] 존재하지 않는 ID 접근 시 404 페이지 표시
+- ✅ **Task 010: Notion API 클라이언트 구현 (v5.x)** — `dataSources.query` 어댑터 + 에러 핸들링 + Mock fallback
+- ✅ **Task 011: 청구서 목록 — 실제 API 연동 (ISR 60초)** — 발행일 내림차순, 상태 필터 파라미터, Playwright MCP 테스트 통과
+- ✅ **Task 012: 청구서 상세 — 실제 API 연동 + Items 관계 DB 조회** — `Promise.all` 병렬 조회, ISR 3600초, 단가×수량=금액 formula 검증
 
 ---
 
 ### Phase 4: 부가 기능 (검색/필터/통계/SEO) ✅
 
-> **목표**: 핵심 조회 기능 위에 검색·필터·통계 대시보드·SEO 메타데이터를 더해 실제 운영 가능한 수준으로 끌어올린다.
-> **완료일**: 2026-05-13
+> **목표**: 검색·필터·통계·SEO로 실제 운영 가능한 수준까지 끌어올림
+> **완료일**: 2026-05-13 / **상세**: [roadmaps/ROADMAP_v1.md](./roadmaps/ROADMAP_v1.md#phase-4-부가-기능-검색필터통계seo-)
 
-- ✅ **Task 013: 요약 통계 카드 (대시보드)** — 완료
-  - ✅ 홈 페이지 상단에 통계 카드 3종 추가
-  - ✅ 전체 건수 카드 (모든 청구서 개수)
-  - ✅ 승인 금액 카드 (상태=승인인 청구서의 총금액 합계)
-  - ✅ 대기 건수 카드 (상태=대기 청구서 개수)
-  - ✅ `formatAmount()` 유틸로 ₩ 통화 포맷팅
-
-- ✅ **Task 014: 상태 필터 탭 (URL searchParam 기반)** — 완료
-  - ✅ `StatusFilter` 컴포넌트를 홈 페이지에 통합
-  - ✅ 전체/대기/승인/거절 탭 클릭 시 URL `?status=` 파라미터 변경
-  - ✅ 서버 컴포넌트에서 `searchParams.status`로 필터링 적용
-  - ✅ 선택된 탭 active 스타일 처리
-  - ✅ **Playwright MCP 테스트 통과**:
-    - [x] 탭 클릭 시 URL 변경 + 해당 상태 청구서만 표시
-    - [x] "전체" 탭 클릭 시 모든 청구서 복귀
-    - [x] 새로고침 시에도 URL 파라미터 기준으로 필터 유지
-
-- ✅ **Task 015: 검색 기능 (URL searchParam 기반)** — 완료
-  - ✅ `SearchBar` 컴포넌트를 홈 페이지 상단에 통합
-  - ✅ 클라이언트명 + 견적서 번호 통합 검색
-  - ✅ 검색어 입력 → URL `?q=` 파라미터 갱신
-  - ✅ 서버 컴포넌트에서 `searchInvoices(query)` 호출
-  - ✅ 상태 필터와 검색 동시 적용 가능
-  - ✅ **Playwright MCP 테스트 통과**:
-    - [x] 검색어 입력 시 일치하는 청구서만 표시
-    - [x] 검색 결과 없을 때 빈 상태 UI 표시
-    - [x] 검색어 지우면 전체 목록 복귀
-
-- ✅ **Task 016: SEO 메타데이터** — 완료
-  - ✅ 청구서 상세 페이지 `generateMetadata()` — 견적서 번호 + 클라이언트명 동적 title/description
-  - ✅ 홈 페이지 정적 메타데이터 설정
-  - ✅ Open Graph 태그 적용
-
-- ✅ **Task 017: sitemap.xml 자동 생성** — 완료
-  - ✅ `src/app/sitemap.ts` — `fetchInvoices()`로 전체 청구서 URL 자동 포함
-  - ✅ 홈 / 청구서 상세 URL 전체 노출
-  - ✅ `lastModified` 필드에 발행일 적용
-
-- ✅ **Task 018: robots.txt 설정** — 완료
-  - ✅ `src/app/robots.ts` — 크롤링 허용 설정
-  - ✅ `sitemap` 위치 명시
-
-- ✅ **Task 019: ISR 캐싱 전략 적용** — 완료
-  - ✅ 청구서 목록: `revalidate: 60` (1분)
-  - ✅ 청구서 상세: `revalidate: 3600` (1시간)
-  - ✅ Notion API 호출 최소화 + 사용자 응답 속도 확보
+- ✅ **Task 013: 요약 통계 카드 (대시보드)** — 전체 건수 / 승인 금액 / 대기 건수
+- ✅ **Task 014: 상태 필터 탭 (URL searchParam 기반)** — `?status=` URL 동기화, 새로고침 유지
+- ✅ **Task 015: 검색 기능 (URL searchParam 기반)** — `?q=` 통합 검색, 상태 필터와 동시 적용
+- ✅ **Task 016: SEO 메타데이터** — `generateMetadata()` + Open Graph
+- ✅ **Task 017: sitemap.xml 자동 생성** — `app/sitemap.ts`에서 전체 청구서 URL 포함
+- ✅ **Task 018: robots.txt 설정** — `app/robots.ts` 크롤링 허용
+- ✅ **Task 019: ISR 캐싱 전략 적용** — 목록 60초 / 상세 3600초
 
 ---
 
 ### Phase 5: 성능 최적화 및 배포 ✅
 
-> **목표**: Vercel에 배포하여 실제 사용자가 접근 가능한 상태로 만든다. 정적 경로 사전 생성과 Lighthouse 측정으로 성능을 보장한다.
-> **이 순서인 이유**: 기능이 모두 완성된 뒤에 최적화해야 측정 기준이 명확하고, 배포는 모든 검증이 끝난 마지막 단계여야 롤백 비용이 최소화된다.
-> **완료일**: 2026-05-14
+> **목표**: Vercel 배포 + `generateStaticParams` 정적 사전 생성 + Core Web Vitals 검증
+> **완료일**: 2026-05-14 / **상세**: [roadmaps/ROADMAP_v1.md](./roadmaps/ROADMAP_v1.md#phase-5-성능-최적화-및-배포-)
 
-- ✅ **Task 020: 청구서 상세 정적 경로 사전 생성** — 완료
-  - ✅ `src/app/invoice/[id]/page.tsx`에 `generateStaticParams()` 추가
-  - ✅ `fetchInvoices()`로 전체 청구서 ID 조회 후 정적 경로 반환
-  - ✅ 빌드 시 정적 페이지 생성으로 초기 응답 속도 개선 (`●` SSG 마커 확인)
-  - ✅ `dynamicParams` 기본값(true)으로 신규 청구서 ISR 동적 생성 지원
-  - **테스트 체크리스트** (Playwright MCP):
-    - [x] `npm run build` 시 모든 청구서 상세 페이지가 정적 생성되는가
-    - [x] 빌드 후 청구서 상세 첫 응답이 즉시 반환되는가
-    - [x] 신규 청구서가 ISR로 동적 생성되는가 (`dynamicParams: true` 기본값)
+- ✅ **Task 020: 청구서 상세 정적 경로 사전 생성** — `generateStaticParams()` + `dynamicParams: true`
+- ✅ **Task 021: Vercel 배포** — 프로덕션 URL `https://claude-invoice-web.vercel.app` + 환경 변수 설정
+- ✅ **Task 022: Lighthouse 성능 검증 및 모바일 최종 검수** — LCP 716ms / CLS 0 / TTFB 8ms, 375/768/1280px 가로 스크롤 없음
 
-- ✅ **Task 021: Vercel 배포** — 프로덕션 배포 완료 및 Playwright MCP 검증 통과
-  - ✅ Vercel 프로젝트 생성 및 GitHub 리포지토리 연결
-  - ✅ 환경 변수 설정 (`NOTION_API_KEY`, `NOTION_DATABASE_ID`, `NOTION_INVOICES_SOURCE_ID`, `NOTION_ITEMS_SOURCE_ID`)
-  - ✅ 프로덕션 빌드 확인 (`npm run build` 오류 없음 — 로컬 검증 완료)
-  - ✅ 배포 URL 발급: `https://claude-invoice-web.vercel.app`
-  - **테스트 체크리스트** (Playwright MCP — 프로덕션 URL, 2026-05-14 검증):
-    - [x] 홈 / 청구서 상세 페이지 모두 200 응답
-    - [ ] Notion에서 견적서 수정 후 ISR로 자동 반영되는가 (Notion 수정 권한 필요 — 스킵)
-    - [x] 상태 필터·검색 URL 파라미터가 프로덕션에서 동작
-    - [x] sitemap.xml / robots.txt 정상 응답 (단, sitemap URL이 localhost:3000 — NEXT_PUBLIC_BASE_URL 환경 변수 미설정)
+---
 
-- ✅ **Task 022: Lighthouse 성능 검증 및 모바일 최종 검수** — 프로덕션 Core Web Vitals 측정 완료
-  - ✅ Core Web Vitals 측정 결과 (Playwright browser_evaluate — 2026-05-14, 프로덕션):
-    - LCP: **716ms** (Good — 기준 2500ms 이하)
-    - CLS: **0** (Good — 기준 0.1 이하)
-    - TTFB: **8ms** (우수)
-    - 페이지 로드: **699ms**
-  - ✅ 모바일(375px) / 태블릿(768px) / 데스크톱(1280px) 뷰포트 최종 검수 — Playwright MCP 완료 (프로덕션)
-  - **테스트 체크리스트** (Playwright MCP):
-    - [ ] Lighthouse 전 카테고리 80점 이상 (Lighthouse CLI 도구 별도 필요 — browser_evaluate로 Core Web Vitals 대체 측정)
-    - [x] 모바일 뷰포트에서 가로 스크롤 없음 (375px / 768px / 1280px 모두 scrollWidth = clientWidth 확인)
-    - [x] 통계 카드 / 청구서 카드 / 상세 테이블이 모든 뷰포트에서 정상 표시
+### Phase 6: 고도화 (관리자/공유/다크모드)
+
+> **목표**: MVP 운영 데이터(F001~F011)가 안정화된 위에 (1) 관리자 전용 뷰, (2) 외부 클라이언트 공유 워크플로우, (3) 다크모드 UX를 더해 실제 사업자 운영 시나리오에 필요한 편의 기능을 완비한다.
+> **이 순서인 이유**:
+> 1. **관리자 레이아웃**을 먼저 만들어 향후 추가될 관리 기능(견적서 생성·수정 등)의 기반 셸을 확보한다.
+> 2. **공유 링크 복사**는 카드/상세 UI 양쪽을 모두 건드리므로, 관리자 뷰까지 컴포넌트 셋업이 끝난 뒤에 추가하면 일관되게 적용할 수 있다.
+> 3. **다크모드**는 모든 컴포넌트에 `dark:` 스타일을 추가해야 하므로 가장 마지막에 일괄 작업하는 것이 효율적이다 (관리자 페이지 컴포넌트 포함).
+>
+> **예상 기간**: 1.5~2주 (Task당 3~5일)
+
+#### - **Task 023: 관리자 레이아웃 (Admin Layout) 구축** - 우선순위
+
+  - [ ] `src/app/admin/layout.tsx` — 관리자 전용 중첩 레이아웃 생성 (사이드바 + 콘텐츠 영역)
+  - [ ] `src/app/admin/page.tsx` — 관리자 대시보드 진입 페이지 (`/admin`)
+  - [ ] `src/app/admin/invoices/page.tsx` — 견적서 목록 관리자 뷰 (테이블 형식, 카드 그리드와 분리)
+  - [ ] `src/components/admin/AdminSidebar.tsx` — shadcn/ui 기반 사이드바 (대시보드 / 견적서 관리 / 설정 메뉴)
+  - [ ] `src/components/admin/AdminInvoiceTable.tsx` — 견적서 번호 / 클라이언트 / 금액 / 상태 / 발행일 / 액션 컬럼
+  - [ ] shadcn/ui 컴포넌트 추가 설치 — `table`, `dialog`, `sheet`(모바일 사이드바)
+  - [ ] **접근 제어**: `src/middleware.ts` — 환경 변수 `ADMIN_PASSWORD` 기반 Basic Auth 또는 `?key=` 쿼리 검증
+  - [ ] `.env.local.example`에 `ADMIN_PASSWORD` 추가
+  - [ ] 모바일 반응형 — 사이드바를 `Sheet`(드로어)로 전환
+  - [ ] **테스트 체크리스트** (Playwright MCP):
+    - [ ] `/admin` 접근 시 인증 없으면 401 또는 로그인 화면으로 리다이렉트
+    - [ ] 올바른 비밀번호 입력 후 사이드바 + 견적서 테이블 정상 렌더링
+    - [ ] 견적서 테이블에서 행 클릭 시 `/invoice/[id]` 상세 페이지로 이동
+    - [ ] 모바일(375px) 뷰포트에서 사이드바가 `Sheet` 드로어로 전환되는지 확인
+    - [ ] 잘못된 비밀번호 입력 시 접근 차단 확인
+
+#### - **Task 024: 클라이언트 공유 링크 복사 기능**
+
+  - [ ] `src/components/invoice/ShareLinkButton.tsx` — Clipboard API 기반 공유 버튼 클라이언트 컴포넌트 (`'use client'`)
+  - [ ] `navigator.clipboard.writeText()`로 청구서 상세 URL 복사 (절대 URL 생성)
+  - [ ] `NEXT_PUBLIC_BASE_URL` 환경 변수로 절대 URL 베이스 구성 (`${BASE}/invoice/${id}`)
+  - [ ] shadcn/ui `sonner`(Toast) 또는 인라인 아이콘 상태 변화 (Copy → Check 2초 후 복귀)
+  - [ ] `InvoiceCard`에 작은 아이콘 버튼으로 통합 (카드 우측 상단)
+  - [ ] `invoice/[id]/page.tsx` 상세 헤더 액션 영역에 텍스트 라벨 포함 버튼으로 통합 ("링크 복사")
+  - [ ] Clipboard API 미지원 환경 fallback — `document.execCommand('copy')` 또는 사용자 수동 복사용 input 표시
+  - [ ] `.env.local.example`에 `NEXT_PUBLIC_BASE_URL` 추가 (예: `https://claude-invoice-web.vercel.app`)
+  - [ ] **테스트 체크리스트** (Playwright MCP):
+    - [ ] 홈 페이지 청구서 카드의 공유 버튼 클릭 시 클립보드에 절대 URL이 복사되는가 (`browser_evaluate`로 `navigator.clipboard.readText()` 검증)
+    - [ ] 복사 완료 후 아이콘이 Check로 변경되고 2초 후 Copy로 복귀하는가
+    - [ ] 청구서 상세 페이지 상단의 "링크 복사" 버튼이 정상 동작하는가
+    - [ ] 복사된 URL을 새 탭에서 열었을 때 동일한 청구서 상세 페이지가 표시되는가
+    - [ ] Toast 알림이 표시되고 일정 시간 후 자동 사라지는가
+
+#### - **Task 025: 다크모드 지원 (next-themes 통합)**
+
+  - [ ] `next-themes` 패키지 설치 (`npm install next-themes`)
+  - [ ] `src/components/theme/ThemeProvider.tsx` — `next-themes`의 `ThemeProvider` 래퍼 (클라이언트 컴포넌트)
+  - [ ] 설정: `attribute="class"`, `defaultTheme="system"`, `enableSystem={true}`, `disableTransitionOnChange`
+  - [ ] `src/app/layout.tsx`에서 `<html lang="ko" suppressHydrationWarning>`로 변경 + `ThemeProvider` 래핑
+  - [ ] `src/components/theme/ThemeToggle.tsx` — Sun/Moon 아이콘 토글 버튼 (Lucide React, shadcn/ui `Button` variant="ghost")
+  - [ ] `Header`에 `ThemeToggle` 우측 배치 (모바일에서도 표시)
+  - [ ] TailwindCSS v4 다크모드 클래스 적용 — 모든 기존 컴포넌트에 `dark:` 변형 추가:
+    - [ ] `InvoiceCard` — 배경/보더/텍스트 다크 톤
+    - [ ] `StatusBadge` — 대기/승인/거절 색상의 다크모드 대비
+    - [ ] `StatusFilter` — 활성 탭 다크 대비
+    - [ ] `InvoiceTable` — 헤더/행/합계 행 다크 톤
+    - [ ] `EmptyState` — 일러스트/텍스트 다크 톤
+    - [ ] `SearchBar` — 입력 필드 다크 톤
+    - [ ] `Header` / `Footer` — 배경/링크 다크 톤
+    - [ ] `AdminSidebar` / `AdminInvoiceTable` (Task 023 결과물) 다크 톤
+    - [ ] 통계 카드 3종 다크 톤
+  - [ ] `globals.css`의 CSS 변수에 `:root` / `.dark` 색상 토큰 정의 (shadcn/ui new-york 다크 팔레트 차용)
+  - [ ] hydration mismatch 방지 — `ThemeToggle`에서 `mounted` 가드 패턴 사용
+  - [ ] **테스트 체크리스트** (Playwright MCP):
+    - [ ] 토글 버튼 클릭 시 `html` 태그에 `class="dark"`가 추가/제거되는가 (`browser_evaluate`로 확인)
+    - [ ] 다크 테마에서 모든 텍스트가 배경 대비 가독성 충족 (시각적 회귀 — 스크린샷)
+    - [ ] 시스템 다크모드 감지 — `prefers-color-scheme: dark` 에뮬레이션 시 자동 다크 적용
+    - [ ] 새로고침 후에도 사용자 선택 테마 유지 (`localStorage` 기반 — `next-themes` 기본 동작)
+    - [ ] 라이트 → 다크 전환 시 깜빡임/하이드레이션 불일치 없음 (콘솔 에러 0)
+    - [ ] 모바일 / 태블릿 / 데스크톱 뷰포트 모두에서 다크 테마 정상 표시
+    - [ ] 관리자(`/admin`) 페이지에서도 다크 테마 일관 적용 확인
 
 ---
 
 ## 완료 기준 체크리스트
 
-### MVP 기능 완료 기준
+### MVP 기능 완료 기준 (Phase 1~5)
 
 - [x] **F001** — 홈 페이지에서 Notion 청구서 목록이 카드 형태로 표시됨
 - [x] **F002** — 청구서 카드 클릭 시 상세 페이지에서 메타 정보 + 항목 테이블이 렌더링됨
@@ -288,9 +224,15 @@
 
 - [x] `generateStaticParams`로 청구서 상세 정적 사전 생성
 - [x] Vercel 배포 URL에서 전체 기능 정상 동작 (Playwright MCP 프로덕션 검증 — 2026-05-14)
-- [ ] Notion에서 청구서 수정 후 ISR로 자동 반영 (60초 / 3600초) 확인 (Notion 수정 권한 필요 — 스킵)
-- [x] Core Web Vitals 우수 (LCP 716ms / CLS 0 — Good 기준 충족, Lighthouse CLI 미수행)
-- [x] 모바일 최종 검증 통과 (Playwright MCP — 375px/768px/1280px 가로 스크롤 없음 확인, 프로덕션)
+- [x] Core Web Vitals 우수 (LCP 716ms / CLS 0 — Good 기준 충족)
+- [x] 모바일 최종 검증 통과 (375/768/1280px 가로 스크롤 없음)
+
+### 고도화 완료 기준 (Phase 6)
+
+- [ ] **F020** — `/admin` 경로의 사이드바 기반 관리자 레이아웃이 정상 동작하고 환경 변수 기반 접근 제어가 적용됨
+- [ ] **F021** — 청구서 카드/상세 페이지의 "링크 복사" 버튼이 절대 URL을 클립보드에 복사하고 Toast 피드백 표시
+- [ ] **F022** — 시스템 테마 자동 감지 + 헤더 토글로 라이트/다크 전환, 모든 컴포넌트에 `dark:` 스타일 적용
+- [ ] Phase 6 전체 Playwright MCP E2E 테스트 통과
 
 ---
 
@@ -321,7 +263,17 @@
 
 ---
 
-## 기술 스택 특이사항
+## 기술 스택
+
+| 영역 | 기술 |
+|------|------|
+| Framework | Next.js 16.2.6 (App Router) |
+| Runtime | React 19.2.4 + TypeScript 5 |
+| Styling | TailwindCSS v4 (`@import "tailwindcss"`, 설정 파일 없음) |
+| UI | shadcn/ui (new-york) + Lucide React |
+| CMS | @notionhq/client v5.21.0 |
+| 배포 | Vercel |
+| Phase 6 추가 | `next-themes` (다크모드), shadcn/ui `sonner`·`sheet`·`dialog`·`table` |
 
 ### `@notionhq/client v5.x` 마이그레이션 주의
 
@@ -329,7 +281,6 @@
 |-------------|----------------|
 | `notion.databases.query({ database_id })` | `notion.dataSources.query({ data_source_id })` |
 | `database_id` 단일 사용 | `database_id` + `data_source_id` 분리 |
-| — | `notion.pages.retrieveMarkdown` 등 신규 메서드 추가 |
 
 - 환경 변수에 **`NOTION_DATABASE_ID`(DB ID)와 `NOTION_INVOICES_SOURCE_ID`(data source ID)를 별도로 관리**해야 합니다.
 - v5.x는 다중 데이터 소스(multi-source) DB를 지원하기 위해 도입된 변경이며, 단일 소스 DB의 경우 첫 번째 `data_source`의 `id`를 사용합니다.
@@ -337,4 +288,4 @@
 ---
 
 **최종 업데이트**: 2026-05-14
-**진행 상황**: Phase 5 완료 (22/22 Tasks 완료) — 프로덕션 배포 완료 (https://claude-invoice-web.vercel.app)
+**진행 상황**: 22/25 Tasks 완료 (Phase 6 대기 중) — 프로덕션 배포 완료 (https://claude-invoice-web.vercel.app)
