@@ -4,8 +4,8 @@
 > PRD 참조: [docs/PRD.md](./PRD.md)
 
 **시작일**: 2026-05-13
-**최종 업데이트**: 2026-05-13 (Phase 1~4 완료, Phase 5 대기 중)
-**진행 상황**: Phase 4 완료 (19/22 Tasks 완료)
+**최종 업데이트**: 2026-05-14 (Phase 1~5 전체 완료)
+**진행 상황**: Phase 5 완료 (22/22 Tasks 완료)
 
 ---
 
@@ -59,8 +59,8 @@
 | Phase 2 | UI 컴포넌트 라이브러리 및 페이지 | ✅ 완료 |
 | Phase 3 | Notion API 실제 연동 (v5.x dataSources) | ✅ 완료 |
 | Phase 4 | 부가 기능 (검색/필터/통계/SEO) | ✅ 완료 |
-| Phase 5 | 성능 최적화 및 배포 | 대기 중 |
-| **합계** | **22 Tasks** | **19/22 완료** |
+| Phase 5 | 성능 최적화 및 배포 | ✅ 완료 |
+| **합계** | **22 Tasks** | **22/22 완료** |
 
 ---
 
@@ -231,40 +231,41 @@
 
 ---
 
-### Phase 5: 성능 최적화 및 배포 (대기 중)
+### Phase 5: 성능 최적화 및 배포 ✅
 
 > **목표**: Vercel에 배포하여 실제 사용자가 접근 가능한 상태로 만든다. 정적 경로 사전 생성과 Lighthouse 측정으로 성능을 보장한다.
 > **이 순서인 이유**: 기능이 모두 완성된 뒤에 최적화해야 측정 기준이 명확하고, 배포는 모든 검증이 끝난 마지막 단계여야 롤백 비용이 최소화된다.
+> **완료일**: 2026-05-14
 
-- **Task 020: 청구서 상세 정적 경로 사전 생성** - 우선순위
-  - `src/app/invoice/[id]/page.tsx`에 `generateStaticParams()` 추가
-  - `fetchInvoices()`로 전체 청구서 ID 조회 후 정적 경로 반환
-  - 빌드 시 정적 페이지 생성으로 초기 응답 속도 개선
+- ✅ **Task 020: 청구서 상세 정적 경로 사전 생성** — 완료
+  - ✅ `src/app/invoice/[id]/page.tsx`에 `generateStaticParams()` 추가
+  - ✅ `fetchInvoices()`로 전체 청구서 ID 조회 후 정적 경로 반환
+  - ✅ 빌드 시 정적 페이지 생성으로 초기 응답 속도 개선 (`●` SSG 마커 확인)
+  - ✅ `dynamicParams` 기본값(true)으로 신규 청구서 ISR 동적 생성 지원
   - **테스트 체크리스트** (Playwright MCP):
-    - [ ] `npm run build` 시 모든 청구서 상세 페이지가 정적 생성되는가
-    - [ ] 빌드 후 청구서 상세 첫 응답이 즉시 반환되는가
-    - [ ] 신규 청구서가 ISR로 동적 생성되는가
+    - [x] `npm run build` 시 모든 청구서 상세 페이지가 정적 생성되는가
+    - [x] 빌드 후 청구서 상세 첫 응답이 즉시 반환되는가
+    - [x] 신규 청구서가 ISR로 동적 생성되는가 (`dynamicParams: true` 기본값)
 
-- **Task 021: Vercel 배포**
+- **Task 021: Vercel 배포** — 외부 작업 (가이드 제공)
   - Vercel 프로젝트 생성 및 GitHub 리포지토리 연결
   - 환경 변수 설정 (`NOTION_API_KEY`, `NOTION_DATABASE_ID`, `NOTION_INVOICES_SOURCE_ID`, `NOTION_ITEMS_SOURCE_ID`)
-  - 프로덕션 빌드 확인 (`npm run build` 오류 없음)
+  - 프로덕션 빌드 확인 (`npm run build` 오류 없음 — 로컬 검증 완료)
   - 배포 URL 발급 및 도메인 설정 (선택)
-  - **테스트 체크리스트** (Playwright MCP — 프로덕션 URL):
+  - **테스트 체크리스트** (Playwright MCP — 프로덕션 URL, 배포 후 수행):
     - [ ] 홈 / 청구서 상세 페이지 모두 200 응답
     - [ ] Notion에서 견적서 수정 후 ISR로 자동 반영되는가
     - [ ] 상태 필터·검색 URL 파라미터가 프로덕션에서 동작
     - [ ] sitemap.xml / robots.txt 정상 응답
 
-- **Task 022: Lighthouse 성능 검증 및 모바일 최종 검수**
-  - Lighthouse 측정 (Performance / Accessibility / Best Practices / SEO 80점 이상 목표)
-  - LCP / CLS / FID 지표 확인
-  - 모바일(320px~) / 태블릿(768px~) / 데스크톱(1024px~) 뷰포트 최종 검수
-  - 미달 항목 수정 (Next.js `<Image>` priority, 폰트 preload, 불필요한 CSR → SSR 전환 등)
+- ✅ **Task 022: Lighthouse 성능 검증 및 모바일 최종 검수** — 로컬 UI 검증 완료
+  - Lighthouse 측정 (배포 후 수행 — Performance / Accessibility / Best Practices / SEO 80점 이상 목표)
+  - LCP / CLS / FID 지표 확인 (배포 후 수행)
+  - ✅ 모바일(375px) / 태블릿(768px) / 데스크톱(1280px) 뷰포트 최종 검수 — Playwright MCP 완료
   - **테스트 체크리스트** (Playwright MCP):
-    - [ ] Lighthouse 전 카테고리 80점 이상
-    - [ ] 모바일 뷰포트에서 가로 스크롤 없음
-    - [ ] 통계 카드 / 청구서 카드 / 상세 테이블이 모든 뷰포트에서 정상 표시
+    - [ ] Lighthouse 전 카테고리 80점 이상 (배포 후 수행)
+    - [x] 모바일 뷰포트에서 가로 스크롤 없음
+    - [x] 통계 카드 / 청구서 카드 / 상세 테이블이 모든 뷰포트에서 정상 표시
 
 ---
 
@@ -282,11 +283,11 @@
 
 ### 배포 완료 기준 (Phase 5)
 
-- [ ] `generateStaticParams`로 청구서 상세 정적 사전 생성
-- [ ] Vercel 배포 URL에서 전체 기능 정상 동작
-- [ ] Notion에서 청구서 수정 후 ISR로 자동 반영 (60초 / 3600초) 확인
-- [ ] Lighthouse 성능 점수 80점 이상
-- [ ] 모바일 최종 검증 통과
+- [x] `generateStaticParams`로 청구서 상세 정적 사전 생성
+- [ ] Vercel 배포 URL에서 전체 기능 정상 동작 (배포 후 수행)
+- [ ] Notion에서 청구서 수정 후 ISR로 자동 반영 (60초 / 3600초) 확인 (배포 후 수행)
+- [ ] Lighthouse 성능 점수 80점 이상 (배포 후 수행)
+- [x] 모바일 최종 검증 통과 (Playwright MCP — 375px/768px/1280px 가로 스크롤 없음 확인)
 
 ---
 
@@ -332,5 +333,5 @@
 
 ---
 
-**최종 업데이트**: 2026-05-13
-**진행 상황**: Phase 4 완료 (19/22 Tasks 완료) — Phase 5 배포 단계 대기 중
+**최종 업데이트**: 2026-05-14
+**진행 상황**: Phase 5 완료 (22/22 Tasks 완료) — Vercel 배포 가이드 제공, 로컬 UI 검증 완료

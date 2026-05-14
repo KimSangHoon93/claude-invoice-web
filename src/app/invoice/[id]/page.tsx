@@ -4,12 +4,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, User, Calendar, CalendarCheck, Receipt } from "lucide-react";
-import { fetchInvoiceById, formatAmount } from "@/lib/notion";
+import { fetchInvoiceById, fetchInvoices, formatAmount } from "@/lib/notion";
 import { StatusBadge } from "@/components/invoice/StatusBadge";
 import { InvoiceTable } from "@/components/invoice/InvoiceTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const revalidate = 3600;
+
+// 빌드 시 전체 청구서 ID를 정적 경로로 사전 생성
+// 신규 청구서는 dynamicParams 기본값(true)에 의해 ISR로 동적 생성됨
+export async function generateStaticParams() {
+  const invoices = await fetchInvoices();
+  return invoices.map((invoice) => ({ id: invoice.id }));
+}
 
 // params는 Next.js 16에서 Promise 타입
 interface InvoiceDetailPageProps {
