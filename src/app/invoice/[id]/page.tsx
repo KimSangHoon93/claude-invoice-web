@@ -7,6 +7,7 @@ import { ArrowLeft, User, Calendar, CalendarCheck, Receipt } from "lucide-react"
 import { fetchInvoiceById, fetchInvoices, formatAmount } from "@/lib/notion";
 import { StatusBadge } from "@/components/invoice/StatusBadge";
 import { InvoiceTable } from "@/components/invoice/InvoiceTable";
+import { PDFDownloadButton } from "@/components/invoice/PDFDownloadButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const revalidate = 3600;
@@ -75,7 +76,7 @@ export default async function InvoiceDetailPage({
         </Link>
       </div>
 
-      {/* 페이지 헤더 — 견적서 번호 + 상태 배지 */}
+      {/* 페이지 헤더 — 견적서 번호 + PDF 다운로드 버튼 + 상태 배지 */}
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Receipt className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
@@ -83,7 +84,11 @@ export default async function InvoiceDetailPage({
             {invoice.invoiceNumber}
           </h1>
         </div>
-        <StatusBadge status={invoice.status} className="text-sm px-3 py-1" />
+        <div className="flex items-center gap-3">
+          {/* PDF 다운로드 버튼 — 클라이언트 컴포넌트 (내부에서 dynamic import 처리) */}
+          <PDFDownloadButton invoice={invoice} />
+          <StatusBadge status={invoice.status} className="text-sm px-3 py-1" />
+        </div>
       </div>
 
       <div className="space-y-6">
