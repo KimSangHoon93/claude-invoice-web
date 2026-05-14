@@ -10,13 +10,24 @@ import { mockInvoices } from "@/mocks/invoices";
 function isNotionConfigured(): boolean {
   return (
     !!process.env.NOTION_API_KEY?.trim() &&
-    !!process.env.NOTION_INVOICES_SOURCE_ID?.trim()
+    !!process.env.NOTION_DATABASE_ID?.trim()
   );
 }
 
 // Notion 클라이언트 (환경 변수 있을 때만 사용)
 function getClient() {
   return new Client({ auth: process.env.NOTION_API_KEY });
+}
+
+// databases.retrieve()로 실제 data_source_id 자동 조회 (프로세스 내 캐시)
+let cachedSourceId: string | null = null;
+
+async function resolveDataSourceId(notion: NotionClient): Promise<string> {
+  if (cachedSourceId) return cachedSourceId;
+  const db = await notion.databases.retrieve({ database_id: process.env.NOTION_DATABASE_ID! });
+  const sources = (db as unknown as { data_sources: Array<{ id: string }> }).data_sources;
+  cachedSourceId = sources[0].id;
+  return cachedSourceId;
 }
 
 // =========================================================
@@ -150,7 +161,7 @@ export async function fetchInvoices(status?: InvoiceStatus): Promise<Invoice[]> 
   try {
     const notion = getClient();
     const ds = getDataSources(notion);
-    const sourceId = process.env.NOTION_INVOICES_SOURCE_ID!;
+    const sourceId = await resolveDataSourceId(notion);
 
     const queryParams: Record<string, unknown> = {
       data_source_id: sourceId,
