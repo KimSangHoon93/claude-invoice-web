@@ -14,19 +14,19 @@ import type { Invoice } from "@/types/invoice";
 
 // =========================================================
 // 한국어 폰트 등록
-// Variable font를 normal/bold 두 가지로 등록
+// 상대 경로는 @react-pdf/renderer 내부 fetch에서 올바르게 해석되지 않을 수 있음
+// → 브라우저 환경에서는 window.location.origin 기반 절대 경로 사용
 // =========================================================
+const fontBase =
+  typeof window !== "undefined"
+    ? window.location.origin
+    : (process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000");
+
 Font.register({
   family: "NotoSansKR",
   fonts: [
-    {
-      src: "/fonts/NotoSansKR-Regular.ttf",
-      fontWeight: "normal",
-    },
-    {
-      src: "/fonts/NotoSansKR-Bold.ttf",
-      fontWeight: "bold",
-    },
+    { src: `${fontBase}/fonts/NotoSansKR-Regular.ttf`, fontWeight: "normal" },
+    { src: `${fontBase}/fonts/NotoSansKR-Bold.ttf`, fontWeight: "bold" },
   ],
 });
 
