@@ -38,14 +38,15 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        {/* FOUC 방지: React 하이드레이션 전에 올바른 테마 클래스 적용 */}
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||((!t||t==='system')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`,
+          }}
+        />
+        <ThemeProvider>
           {children}
-          {/* 전역 Toast 알림 — Sonner 기반 */}
           <Toaster />
         </ThemeProvider>
       </body>

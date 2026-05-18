@@ -1,17 +1,20 @@
-// 라이트/다크 모드 전환 토글 버튼 (클라이언트 컴포넌트)
-// useTheme의 resolvedTheme으로 SSR/CSR 불일치 방지
 "use client";
 
-import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/components/theme/ThemeProvider";
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  // resolvedTheme이 undefined인 SSR 단계에서는 빈 공간으로 레이아웃 유지
-  // next-themes는 suppressHydrationWarning과 함께 hydration mismatch를 자동 처리
-  if (!resolvedTheme) {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 마운트 전: SSR 출력과 동일한 플레이스홀더 → hydration 불일치 방지
+  if (!mounted) {
     return <div className="h-9 w-9" aria-hidden="true" />;
   }
 
